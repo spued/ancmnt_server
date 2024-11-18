@@ -6,7 +6,7 @@ require("dotenv").config();
 const { exec } = require('child_process');
 const fs = require('node:fs');
 const app = express();
-const port = 4002;
+const port = 4003;
 
 // Use morgan middleware to log HTTP requests to the console
 logger.token('date', (req, res, tz) => {
