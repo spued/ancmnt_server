@@ -4,11 +4,11 @@
 if [ $# -lt 7 ]
   then
     echo "Arguments not meet. $#"
-    echo "Usage : sip_play.sh <dest> <period> <file> <sip_username> <sip_password> <sip_host> <sip_port>"
+    echo "Usage : radio_sip_play.sh <dest> <period> <url> <sip_username> <sip_password> <sip_host> <sip_port>"
     exit 1
 fi
 echo --- Call to $1 for $2 seconds
-(sleep 1 &&timeout $2 paplay ../pabox/$3) | /usr/bin/expect - << EOF
+(sleep 1 &&timeout $2 cvlc $3) | /usr/bin/expect - << EOF
 spawn baresip
 expect "ready."
 sleep 0.3
