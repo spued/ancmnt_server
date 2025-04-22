@@ -7,7 +7,7 @@ const { exec } = require('child_process');
 const fs = require('node:fs');
 const app = express();
 const port = 4002;
-
+const main_yek = "1234567890";
 // Use morgan middleware to log HTTP requests to the console
 logger.token('date', (req, res, tz) => {
   return moment().tz(tz).format('YYYY-MM-DD HH:mm:ss');
@@ -33,7 +33,7 @@ app.post("/api/anc", function (req, res) {
     data : null
   }
   //console.log(req.body);
-  if(req.body.api_key != "1234567890") return res.json(resData);
+  if(req.body.api_key != main_yek) return res.json(resData);
   const log_data = `### API :: ANC :: play filename = ${req.body.filename} to number = ${req.body.number} for ${req.body.duration} seconds.`;
   console.log(log_data);
   // Write start log
@@ -85,7 +85,7 @@ app.post("/api/anc/radio_play", function (req, res) {
     data : null
   }
   //console.log(req.body);
-  if(req.body.api_key != "1234567890") return res.json(resData);
+  if(req.body.api_key != main_yek) return res.json(resData);
   const log_data = `### API: ANC: Radio play to number = ${req.body.number} at ${req.body.url}`;
   console.log(log_data);
   let _date = moment().tz("Asia/Bangkok").format('YYYY-MM-DD');
@@ -115,6 +115,52 @@ app.post("/api/anc/radio_stop", function (req, res) {
  exec(`/usr/bin/killall baresip`, (err, stdout) => {
    if (err) {
       resData.msg = "Error stop radio";
+   } else {
+     resData.code = 0;
+     resData.msg = "Ok";
+   }
+   res.json(resData);
+ })
+});
+
+app.post("/api/anc/url_play", function (req, res) {
+  let resData = {
+    code : 1,
+    msg : "default",
+    data : null
+  }
+  //console.log(req.body);
+  if(req.body.api_key != main_yek) return res.json(resData);
+  const log_data = `### API: ANC: URL play to number = ${req.body.number} at ${req.body.url}`;
+  console.log(log_data);
+  let _date = moment().tz("Asia/Bangkok").format('YYYY-MM-DD');
+  let _datetime = moment().tz("Asia/Bangkok").format('YYYY-MM-DD HH:mm:ss');
+  let _log_filename = 'logs/anc_'+_date+'.log';
+  fs.writeFile(_log_filename, _datetime+ ": START: " + log_data + "\r\n", { flag: 'a+' }, err => {});
+  exec(`./radio_sip_play.sh ${req.body.number} ${req.body.period} ${req.body.url} ${req.body.sip_username} `+
+        `${req.body.sip_password} ${req.body.sip_host} ${req.body.sip_port}`, (err, stdout, stderr) => {
+    if (err) {
+      resData.msg = "Error play radio";
+    } else {
+      resData.msg = 'OK';
+      resData.code = 0;
+      _datetime = moment().tz("Asia/Bangkok").format('YYYY-MM-DD HH:mm:ss');
+      fs.writeFile(_log_filename, _datetime+ ": END: " + log_data + "\r\n", { flag: 'a+' }, err => {});
+    }
+  });
+  res.json(resData);
+});
+
+app.post("/api/anc/url_stop", function (req, res) {
+  let resData = {
+    code : 1,
+    msg : "default",
+    data : null
+  }
+ exec(`/usr/bin/killall vlc`, (err,stdout) => {});
+ exec(`/usr/bin/killall baresip`, (err, stdout) => {
+   if (err) {
+      resData.msg = "Error stop url play";
    } else {
      resData.code = 0;
      resData.msg = "Ok";

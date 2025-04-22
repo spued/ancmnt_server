@@ -8,7 +8,7 @@ if [ $# -lt 7 ]
     exit 1
 fi
 echo --- Call to $1 for $2 seconds
-(sleep 1 &&timeout $2 paplay ../pabox/$3) | /usr/bin/expect - << EOF
+(sleep 1 &&timeout $2 paplay ../PABox/$3) | /usr/bin/expect - << EOF
 spawn baresip
 expect "ready."
 sleep 0.3
