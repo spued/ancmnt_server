@@ -9,12 +9,12 @@ if [ $# -lt 7 ]
 fi
 echo --- Call to $1 for $2 seconds
 (sleep 1 &&timeout $2 cvlc $3) | /usr/bin/expect - << EOF
-spawn baresip
+spawn baresip -f ./sip_config/
 expect "ready."
 sleep 0.3
 send "/uanew <sip:$4@$6:$7;audio_codecs=pcma>;auth_pass=$5\n"
 expect "200 OK"
-send "/uafind sip:$4@$6\n"
+send "/uafind sip:$4@$6:5060\n"
 expect "$6"
 send "d"
 expect ">"
